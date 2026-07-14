@@ -53,24 +53,35 @@ def infer(
     logits = model(tensor)
     probs = torch.sigmoid(logits)
     pred = (probs > threshold).byte()
-    return pred.squeeze().cpu().numpy()
+    mask = pred.squeeze().cpu().numpy()
+
+    # morphological post-processing: light noise cleanup, then fill holes
+    kernel = np.ones((3, 3), np.uint8)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=1)
+
+    # fill holes inside each nucleus region (one fill per external contour)
+    filled = np.zeros_like(mask)
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cv2.drawContours(filled, contours, -1, 1, thickness=cv2.FILLED)
+    return filled
 
 
-def draw_contours(original: np.ndarray, mask: np.ndarray) -> np.ndarray:
+def draw_contours(original: np.ndarray, mask: np.ndarray, min_area: int = 100) -> np.ndarray:
     canvas = original.copy()
     if canvas.ndim == 2 or canvas.shape[2] == 1:
         canvas = cv2.cvtColor(canvas, cv2.COLOR_GRAY2RGB)
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    cv2.drawContours(canvas, contours, -1, (0, 255, 0), 1)
+    valid = [c for c in contours if cv2.contourArea(c) >= min_area]
+    cv2.drawContours(canvas, valid, -1, (0, 255, 0), 2)
     return canvas
 
 
-def extract_features(mask: np.ndarray, pixel_area: float = 1.0) -> dict:
+def extract_features(mask: np.ndarray, pixel_area: float = 1.0, min_area: int = 100) -> dict:
     labeled = label(mask, connectivity=2)
     props = regionprops(labeled)
-    areas = [p.area * pixel_area for p in props]
+    areas = [p.area * pixel_area for p in props if p.area >= min_area]
     return {
-        "cell_count": len(props),
+        "cell_count": len(areas),
         "avg_nucleus_area_px": float(np.mean(areas)) if areas else 0.0,
         "total_nucleus_area_px": float(np.sum(areas)),
         "image_area_px": mask.shape[0] * mask.shape[1],
@@ -83,6 +94,7 @@ def run_pipeline(
     model: nn.Module | None = None,
     device: torch.device | None = None,
     return_annotated: bool = True,
+    min_area: int = 100,
 ) -> dict:
     if device is None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -97,7 +109,7 @@ def run_pipeline(
     processed = preprocess(img_rgb)
     mask = infer(model, processed, device)
 
-    features = extract_features(mask)
+    features = extract_features(mask, min_area=min_area)
 
     result = {
         "image_path": str(image_path),
@@ -106,7 +118,7 @@ def run_pipeline(
     }
 
     if return_annotated:
-        annotated = draw_contours(img_rgb, mask)
+        annotated = draw_contours(img_rgb, mask, min_area=min_area)
         _, buffer = cv2.imencode(".png", cv2.cvtColor(annotated, cv2.COLOR_RGB2BGR))
         result["annotated_base64"] = base64_encode(buffer)
 

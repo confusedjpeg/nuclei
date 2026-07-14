@@ -70,7 +70,7 @@ body::after {
   z-index: 0;
 }
 
-.app { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 20px 24px 40px; }
+.app { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 20px 24px 40px; }
 
 /* HEADER */
 .header {
@@ -151,13 +151,11 @@ body::after {
 
 /* MAIN GRID */
 .main-grid {
-  display: grid;
-  grid-template-columns: 1fr 1.3fr;
+  display: flex;
+  flex-direction: column;
   gap: 28px;
-  align-items: start;
 }
 @media (max-width: 820px) {
-  .main-grid { grid-template-columns: 1fr; }
   .app { padding: 16px; }
 }
 
@@ -175,19 +173,32 @@ body::after {
 /* UPLOAD SECTION */
 .upload-area {
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.upload-area .drop-zone {
+  flex: 1;
+  min-width: 300px;
+}
+.upload-area .upload-controls {
+  display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
+  min-width: 180px;
 }
 .drop-zone {
   border: 1.5px dashed var(--border-strong);
   border-radius: var(--radius);
-  padding: 48px 24px;
+  padding: 32px 24px;
   text-align: center;
   cursor: pointer;
   transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   background: var(--bg-elevated);
   position: relative;
   overflow: hidden;
+  min-width: 280px;
 }
 .drop-zone::before {
   content: '';
@@ -234,7 +245,14 @@ body::after {
   font-size: 0.75rem;
   color: var(--text-muted);
 }
-.drop-zone input[type="file"] { display: none; }
+.drop-zone input[type="file"] {
+  position: fixed;
+  left: -9999px;
+  top: -9999px;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
 
 /* file selected state */
 .file-info {
@@ -319,12 +337,6 @@ body::after {
 }
 .btn-sm { padding: 6px 14px; font-size: 0.75rem; }
 .btn-full { width: 100%; }
-.upload-actions {
-  display: flex;
-  gap: 10px;
-  z-index: 1;
-  position: relative;
-}
 
 /* RESULTS SECTION */
 .results-placeholder {
@@ -354,53 +366,59 @@ body::after {
 }
 
 /* IMAGE DISPLAY */
+/* IMAGE DISPLAY — SIDE BY SIDE */
 .image-display {
   margin-bottom: 20px;
 }
-.image-tabs {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 12px;
-  background: var(--bg-elevated);
-  border-radius: var(--radius-sm);
-  padding: 3px;
-  width: fit-content;
-}
-.image-tab {
-  padding: 6px 16px;
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
-  font-family: var(--font-body);
-  font-size: 0.75rem;
-  font-weight: 500;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.25s;
-}
-.image-tab.active {
-  background: var(--accent-dim);
-  color: var(--accent);
-}
-.image-tab:hover:not(.active) { color: var(--text-secondary); }
-.image-frame {
+.image-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
   border-radius: var(--radius-sm);
   overflow: hidden;
-  background: var(--bg-deep);
   border: 1px solid var(--border);
+  background: var(--border);
+}
+.image-panel {
+  background: var(--bg-deep);
   position: relative;
-  aspect-ratio: 4/3;
+  aspect-ratio: 16/9;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  min-height: 320px;
 }
-.image-frame img {
+.image-panel img {
   max-width: 100%;
   max-height: 100%;
   display: block;
   object-fit: contain;
 }
-.image-frame.loading::after {
+.image-panel .empty-state {
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  text-align: center;
+  padding: 16px;
+}
+.image-panel-label {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: rgba(6,10,18,0.75);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--border);
+}
+.image-panel-label.original { color: var(--text-muted); }
+.image-panel-label.annotated { color: var(--green); }
+.image-panel.loading::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -411,10 +429,13 @@ body::after {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
 }
-.image-frame .empty-state {
-  color: var(--text-dim);
-  font-size: 0.8rem;
-  font-family: var(--font-mono);
+
+@media (max-width: 640px) {
+  .upload-area { flex-direction: column; }
+  .upload-area .upload-controls { flex-direction: row; width: 100%; }
+  .image-compare { grid-template-columns: 1fr; }
+  .image-panel { aspect-ratio: 4/3; min-height: 240px; }
+  .metrics-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* METRICS GRID */
@@ -757,11 +778,8 @@ body::after {
         </div>
       </div>
 
-      <div class="upload-actions">
+      <div class="upload-controls">
         <button class="btn btn-primary btn-full" id="analyzeBtn" disabled>Analyze Image</button>
-      </div>
-
-      <div class="upload-actions" style="margin-top:4px">
         <button class="btn btn-ghost btn-full btn-sm" id="sampleBtn">
           &#9672; Run Sample Test
         </button>
@@ -777,15 +795,19 @@ body::after {
       </div>
 
       <div id="resultsContent" style="display:none">
-        <!-- Image Display -->
+        <!-- Image Display -- Side by Side -->
         <div class="image-display">
-          <div class="image-tabs" id="imageTabs">
-            <button class="image-tab active" data-tab="annotated">Annotated</button>
-            <button class="image-tab" data-tab="original">Original</button>
-          </div>
-          <div class="image-frame" id="imageFrame">
-            <img id="resultImage" alt="Analysis result" style="display:none">
-            <span class="empty-state" id="imageEmpty">No image data</span>
+          <div class="image-compare">
+            <div class="image-panel" id="frameOriginal">
+              <span class="image-panel-label original">Original</span>
+              <img id="imgOriginal" alt="Original" style="display:none">
+              <span class="empty-state" id="emptyOriginal">No original</span>
+            </div>
+            <div class="image-panel" id="frameAnnotated">
+              <span class="image-panel-label annotated">Annotated</span>
+              <img id="imgAnnotated" alt="Annotated" style="display:none">
+              <span class="empty-state" id="emptyAnnotated">No result</span>
+            </div>
           </div>
         </div>
 
@@ -887,12 +909,12 @@ body::after {
 
 <script>
 (function() {
+  try {
+
   // state
   const state = {
     selectedFile: null,
     resultData: null,
-    currentImageTab: 'annotated',
-    originalImageDataUrl: null,
     evalResults: {},
   };
 
@@ -913,9 +935,10 @@ body::after {
   const dropIcon = $('dropIcon');
   const resultsPlaceholder = $('resultsPlaceholder');
   const resultsContent = $('resultsContent');
-  const resultImage = $('resultImage');
-  const imageEmpty = $('imageEmpty');
-  const imageFrame = $('imageFrame');
+  const imgOriginal = $('imgOriginal');
+  const emptyOriginal = $('emptyOriginal');
+  const imgAnnotated = $('imgAnnotated');
+  const emptyAnnotated = $('emptyAnnotated');
   const mCells = $('mCells');
   const mArea = $('mArea');
   const mCoverage = $('mCoverage');
@@ -924,7 +947,6 @@ body::after {
   const base64Content = $('base64Content');
   const base64Text = $('base64Text');
   const base64Copy = $('base64Copy');
-  const imageTabs = $('imageTabs');
   const statusDot = $('statusDot');
   const statusText = $('statusText');
   const evalBtn = $('evalBtn');
@@ -939,28 +961,44 @@ body::after {
   const evalInferDetail = $('evalInferDetail');
   const evalFeatureDetail = $('evalFeatureDetail');
 
-  const API_BASE = window.location.origin;
+  if (!statusDot || !statusText) throw new Error('Critical DOM elements missing');
+
+  console.log('[BioVision] JS running, API_BASE:', window.location.origin);
+  statusText.textContent = 'Loading…';
+
+  const API_BASE = window.location.origin && window.location.origin !== 'null'
+    ? window.location.origin
+    : 'http://localhost:8000';
   endpointDisplay.textContent = `${API_BASE}/analyze`;
 
   // status
   async function checkHealth() {
     statusDot.className = 'status-dot';
-    statusText.textContent = 'Connecting…';
+    statusText.textContent = 'Connecting\u2026';
     try {
-      const res = await fetch(`${API_BASE}/health`);
+      const url = `${API_BASE}/health`;
+      console.log('[BioVision] Checking health:', url);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+      const res = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeout);
+      console.log('[BioVision] Health response status:', res.status);
       const data = await res.json();
+      console.log('[BioVision] Health data:', data);
       if (data.status === 'ok') {
         statusDot.className = 'status-dot online';
-        statusText.textContent = `Online · ${data.device || 'ready'}`;
+        statusText.textContent = `Online \u00b7 ${data.device || 'ready'}`;
         return true;
       }
-      throw new Error('unexpected response');
-    } catch {
+      throw new Error('unexpected response: ' + JSON.stringify(data));
+    } catch (err) {
+      console.error('[BioVision] Health check failed:', err);
       statusDot.className = 'status-dot offline';
       statusText.textContent = 'Offline';
       return false;
     }
   }
+  checkHealth();
 
   // file handling
   function handleFile(file) {
@@ -1046,16 +1084,10 @@ body::after {
       data._duration = parseFloat(elapsed);
       state.resultData = data;
 
-      // store original image as data URL
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        state.originalImageDataUrl = e.target.result;
-        uploadOverlay.classList.remove('active');
-        analyzeBtn.disabled = false;
-        sampleBtn.disabled = false;
-        renderResults(data);
-      };
-      reader.readAsDataURL(file);
+      uploadOverlay.classList.remove('active');
+      analyzeBtn.disabled = false;
+      sampleBtn.disabled = false;
+      renderResults(data);
 
     } catch (err) {
       uploadOverlay.classList.remove('active');
@@ -1094,8 +1126,21 @@ body::after {
     resultsPlaceholder.style.display = 'none';
     resultsContent.style.display = 'block';
 
-    // image
-    updateImage();
+    // original image from server (PNG always, works for TIFF uploads)
+    const origB64 = data.original_image_base64;
+    if (origB64) {
+      imgOriginal.src = `data:image/png;base64,${origB64}`;
+      imgOriginal.style.display = 'block';
+      emptyOriginal.style.display = 'none';
+    }
+
+    // annotated image
+    const b64 = data.annotated_image_base64;
+    if (b64) {
+      imgAnnotated.src = `data:image/png;base64,${b64}`;
+      imgAnnotated.style.display = 'block';
+      emptyAnnotated.style.display = 'none';
+    }
 
     // metrics
     const fc = data.features;
@@ -1105,7 +1150,6 @@ body::after {
     mTime.textContent = data._duration.toFixed(2);
 
     // base64
-    const b64 = data.annotated_image_base64 || '';
     base64Text.textContent = b64 ? `data:image/png;base64,${b64}` : '(no base64 data)';
 
     // animate metrics
@@ -1114,36 +1158,6 @@ body::after {
     // scroll to results
     $('resultsCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
-
-  function updateImage() {
-    const tab = state.currentImageTab;
-    if (tab === 'annotated' && state.resultData) {
-      const b64 = state.resultData.annotated_image_base64;
-      if (b64) {
-        const src = `data:image/png;base64,${b64}`;
-        resultImage.src = src;
-        resultImage.style.display = 'block';
-        imageEmpty.style.display = 'none';
-      }
-    } else if (tab === 'original' && state.originalImageDataUrl) {
-      resultImage.src = state.originalImageDataUrl;
-      resultImage.style.display = 'block';
-      imageEmpty.style.display = 'none';
-    } else {
-      resultImage.style.display = 'none';
-      imageEmpty.style.display = 'block';
-    }
-  }
-
-  // image tabs
-  imageTabs.addEventListener('click', (e) => {
-    const tab = e.target.closest('.image-tab');
-    if (!tab) return;
-    imageTabs.querySelectorAll('.image-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    state.currentImageTab = tab.dataset.tab;
-    updateImage();
-  });
 
   // base64 toggle
   base64Toggle.addEventListener('click', () => {
@@ -1252,15 +1266,25 @@ body::after {
         // also populate the UI with sample result
         if (upData) {
           state.resultData = { ...upData, _duration: parseFloat(upDt) };
-          state.originalImageDataUrl = URL.createObjectURL(file);
           resultsPlaceholder.style.display = 'none';
           resultsContent.style.display = 'block';
-          updateImage();
+          const origB64 = upData.original_image_base64;
+          if (origB64) {
+            imgOriginal.src = `data:image/png;base64,${origB64}`;
+            imgOriginal.style.display = 'block';
+            emptyOriginal.style.display = 'none';
+          }
+          let b64 = upData.annotated_image_base64;
+          if (b64) {
+            imgAnnotated.src = `data:image/png;base64,${b64}`;
+            imgAnnotated.style.display = 'block';
+            emptyAnnotated.style.display = 'none';
+          }
           mCells.textContent = upData.features.cell_count;
           mArea.textContent = upData.features.avg_nucleus_area_px.toFixed(1);
           mCoverage.textContent = (upData.features.coverage_ratio * 100).toFixed(1) + '%';
           mTime.textContent = upDt;
-          const b64 = upData.annotated_image_base64 || '';
+          b64 = upData.annotated_image_base64 || '';
           base64Text.textContent = b64 ? `data:image/png;base64,${b64}` : '(no base64 data)';
           animateMetrics();
         }
@@ -1315,15 +1339,18 @@ body::after {
     evalSummary.style.display = 'none';
   });
 
-  // init
-  checkHealth();
-
   // keyboard shortcut
   document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       if (!analyzeBtn.disabled) analyzeBtn.click();
     }
   });
+
+  } catch (e) {
+    console.error('[BioVision] Fatal JS error:', e);
+    statusText.textContent = 'Init error: ' + e.message;
+    statusDot.className = 'status-dot offline';
+  }
 })();
 </script>
 </body>

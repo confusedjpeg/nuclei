@@ -10,6 +10,7 @@ import numpy as np
 import torch
 import uvicorn
 from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -42,6 +43,20 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/favicon.ico")
+async def favicon():
+    from fastapi.responses import Response
+    return Response(status_code=204)
 
 
 @app.get("/health")
@@ -86,7 +101,8 @@ async def analyze(file: UploadFile = File(...), return_annotated: bool = True):
     processed = preprocess(img_rgb)
     mask = infer(model, processed, device)
 
-    features = extract_features(mask)
+    MIN_AREA = 120
+    features = extract_features(mask, min_area=MIN_AREA)
 
     result = {
         "filename": file.filename,
@@ -100,9 +116,11 @@ async def analyze(file: UploadFile = File(...), return_annotated: bool = True):
     }
 
     if return_annotated:
-        annotated = draw_contours(img_rgb, mask)
+        annotated = draw_contours(img_rgb, mask, min_area=MIN_AREA)
         _, buffer = cv2.imencode(".png", cv2.cvtColor(annotated, cv2.COLOR_RGB2BGR))
         result["annotated_image_base64"] = base64_encode(buffer)
+        _, orig_buffer = cv2.imencode(".png", cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR))
+        result["original_image_base64"] = base64_encode(orig_buffer)
 
     return JSONResponse(result)
 
@@ -113,7 +131,11 @@ if STATIC_DIR.is_dir():
 
     @app.get("/")
     async def serve_index():
-        return FileResponse(str(STATIC_DIR / "index.html"), media_type="text/html")
+        return FileResponse(
+            str(STATIC_DIR / "index.html"),
+            media_type="text/html",
+            headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"},
+        )
 
 
 if __name__ == "__main__":
