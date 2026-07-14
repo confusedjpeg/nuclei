@@ -1,0 +1,402 @@
+[
+  {
+    "file": "dsb2018\\test\\images\\0bda515e370294ed94efd36bd53782288acacb040c171df2ed97fd691fc9d8fe.tif",
+    "cell_count": 45,
+    "avg_nucleus_area_px": 89.73333333333333,
+    "total_nucleus_area_px": 4038.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.061614990234375
+  },
+  {
+    "file": "dsb2018\\test\\images\\0bf4b144167694b6846d584cf52c458f34f28fcae75328a2a096c8214e01c0d0.tif",
+    "cell_count": 50,
+    "avg_nucleus_area_px": 351.34,
+    "total_nucleus_area_px": 17567.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.2680511474609375
+  },
+  {
+    "file": "dsb2018\\test\\images\\1b6044e4858a9b7cee9b0028d8e54fbc8fb72e6c4424ab5b9f3859bfc72b33c5.tif",
+    "cell_count": 47,
+    "avg_nucleus_area_px": 149.89361702127658,
+    "total_nucleus_area_px": 7045.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.1074981689453125
+  },
+  {
+    "file": "dsb2018\\test\\images\\1c2f9e121fc207efff79d46390df1a740566b683ff56a96d8cabe830a398dd2e.tif",
+    "cell_count": 12,
+    "avg_nucleus_area_px": 219.66666666666666,
+    "total_nucleus_area_px": 2636.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.04022216796875
+  },
+  {
+    "file": "dsb2018\\test\\images\\1db1cddf28e305c9478519cfac144eee2242183fe59061f1f15487e925e8f5b5.tif",
+    "cell_count": 14,
+    "avg_nucleus_area_px": 123.85714285714286,
+    "total_nucleus_area_px": 1734.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.026458740234375
+  },
+  {
+    "file": "dsb2018\\test\\images\\1f9e429c12f4477221b5b855a5f494fda2ef6d064ff75b061ffaf093e91758c5.tif",
+    "cell_count": 63,
+    "avg_nucleus_area_px": 94.3015873015873,
+    "total_nucleus_area_px": 5941.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.0906524658203125
+  },
+  {
+    "file": "dsb2018\\test\\images\\2817299fd3b88670e86a9db5651ba24333c299d1d41e5491aabfcd95aee84174.tif",
+    "cell_count": 17,
+    "avg_nucleus_area_px": 169.7058823529412,
+    "total_nucleus_area_px": 2885.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.0440216064453125
+  },
+  {
+    "file": "dsb2018\\test\\images\\2cfa857e63be1b418c91ad5ea1f8d136fd1b80fc856e1d4277274c3dea28011c.tif",
+    "cell_count": 11,
+    "avg_nucleus_area_px": 140.63636363636363,
+    "total_nucleus_area_px": 1547.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.0236053466796875
+  },
+  {
+    "file": "dsb2018\\test\\images\\33618678c167c5e07be02c49d0c43bcd90493ba5d83110a631409a4d3ccc1e51.tif",
+    "cell_count": 20,
+    "avg_nucleus_area_px": 1634.55,
+    "total_nucleus_area_px": 32691.0,
+    "image_area_px": 129600,
+    "coverage_ratio": 0.25224537037037037
+  },
+  {
+    "file": "dsb2018\\test\\images\\3477024fd843e46097840360f9cdee24b76bf5c593ed27a9aee7a5728a06aa51.tif",
+    "cell_count": 53,
+    "avg_nucleus_area_px": 131.50943396226415,
+    "total_nucleus_area_px": 6970.0,
+    "image_area_px": 361920,
+    "coverage_ratio": 0.019258399646330682
+  },
+  {
+    "file": "dsb2018\\test\\images\\3582166ee20755856adf4882a8bfacb616fce4247911605a109c4862de421bcd.tif",
+    "cell_count": 28,
+    "avg_nucleus_area_px": 143.28571428571428,
+    "total_nucleus_area_px": 4012.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.06121826171875
+  },
+  {
+    "file": "dsb2018\\test\\images\\3bfd6bb152310f93daa6f4e1867c10572946e874b3a30c9ba8e0fcdeb590300b.tif",
+    "cell_count": 36,
+    "avg_nucleus_area_px": 265.47222222222223,
+    "total_nucleus_area_px": 9557.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.1458282470703125
+  },
+  {
+    "file": "dsb2018\\test\\images\\43cf6b2ec0b0745ac2b87b4d8780f62e9050d3f5d50a1fcefa42d166191e84c6.tif",
+    "cell_count": 64,
+    "avg_nucleus_area_px": 159.984375,
+    "total_nucleus_area_px": 10239.0,
+    "image_area_px": 361920,
+    "coverage_ratio": 0.0282907824933687
+  },
+  {
+    "file": "dsb2018\\test\\images\\4d40de30a3db3bc4f241cb7f48e8497c11e8f20a99bf55788bdce17242029745.tif",
+    "cell_count": 24,
+    "avg_nucleus_area_px": 159.04166666666666,
+    "total_nucleus_area_px": 3817.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.0582427978515625
+  },
+  {
+    "file": "dsb2018\\test\\images\\4dbbb275960ab9e4ec2c66c8d3000f7c70c8dce5112df591b95db84e25efa6e9.tif",
+    "cell_count": 190,
+    "avg_nucleus_area_px": 366.0684210526316,
+    "total_nucleus_area_px": 69553.0,
+    "image_area_px": 361920,
+    "coverage_ratio": 0.1921778293545535
+  },
+  {
+    "file": "dsb2018\\test\\images\\547ef286ee5f4e5dce533e982e6992ada67b7d727fdd3cfa6576f24c631a7ae6.tif",
+    "cell_count": 217,
+    "avg_nucleus_area_px": 433.17511520737327,
+    "total_nucleus_area_px": 93999.0,
+    "image_area_px": 361920,
+    "coverage_ratio": 0.25972314323607426
+  },
+  {
+    "file": "dsb2018\\test\\images\\57b49733c5a3c268b013553635a826e6a1b10e699bbd19c3b842375fe0adf344.tif",
+    "cell_count": 16,
+    "avg_nucleus_area_px": 2218.125,
+    "total_nucleus_area_px": 35490.0,
+    "image_area_px": 129600,
+    "coverage_ratio": 0.2738425925925926
+  },
+  {
+    "file": "dsb2018\\test\\images\\5953af5080d981b554529971903d8bee9871457a4361b51f04ba04f43793dd8f.tif",
+    "cell_count": 27,
+    "avg_nucleus_area_px": 346.6296296296296,
+    "total_nucleus_area_px": 9359.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.1428070068359375
+  },
+  {
+    "file": "dsb2018\\test\\images\\5ddbfba2519484316e4b7ccabfa605e6e6fd96c3d87ac8cdfd2c134571a15311.tif",
+    "cell_count": 18,
+    "avg_nucleus_area_px": 145.44444444444446,
+    "total_nucleus_area_px": 2618.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.039947509765625
+  },
+  {
+    "file": "dsb2018\\test\\images\\5f9d29d6388c700f35a3c29fa1b1ce0c1cba6667d05fdb70bd1e89004dcf71ed.tif",
+    "cell_count": 139,
+    "avg_nucleus_area_px": 678.726618705036,
+    "total_nucleus_area_px": 94343.0,
+    "image_area_px": 361920,
+    "coverage_ratio": 0.2606736295313882
+  },
+  {
+    "file": "dsb2018\\test\\images\\602f267432e7a573e1092f1cf48135c82d0fbc8722bc028b9330ec801a40bb18.tif",
+    "cell_count": 19,
+    "avg_nucleus_area_px": 612.1578947368421,
+    "total_nucleus_area_px": 11631.0,
+    "image_area_px": 361920,
+    "coverage_ratio": 0.03213693633952255
+  },
+  {
+    "file": "dsb2018\\test\\images\\608ff81c8a0c8b622f6648a9c7f935d85f0c503f515ef2ac3728387be1953ee8.tif",
+    "cell_count": 11,
+    "avg_nucleus_area_px": 169.72727272727272,
+    "total_nucleus_area_px": 1867.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.0284881591796875
+  },
+  {
+    "file": "dsb2018\\test\\images\\6bd18a218d25247dc456aed124c066a6397fb93086e860e4d04014bfa9c9555d.tif",
+    "cell_count": 46,
+    "avg_nucleus_area_px": 143.8913043478261,
+    "total_nucleus_area_px": 6619.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.1009979248046875
+  },
+  {
+    "file": "dsb2018\\test\\images\\79dfcbc9361edd3a1ffe81a5bdaa22a197ad1341f3fa64b86a646c2607d6b324.tif",
+    "cell_count": 39,
+    "avg_nucleus_area_px": 124.23076923076923,
+    "total_nucleus_area_px": 4845.0,
+    "image_area_px": 361920,
+    "coverage_ratio": 0.013386936339522546
+  },
+  {
+    "file": "dsb2018\\test\\images\\7d40ea6ead1bec903f26d9046d291aedcb12a584b4d3b337ea252b34c7d86072.tif",
+    "cell_count": 22,
+    "avg_nucleus_area_px": 1816.409090909091,
+    "total_nucleus_area_px": 39961.0,
+    "image_area_px": 129600,
+    "coverage_ratio": 0.30834104938271606
+  },
+  {
+    "file": "dsb2018\\test\\images\\84e642d75ae6ece8147272418b6fe13d04db8d076fe306c4acedc329fceab564.tif",
+    "cell_count": 20,
+    "avg_nucleus_area_px": 189.7,
+    "total_nucleus_area_px": 3794.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.057891845703125
+  },
+  {
+    "file": "dsb2018\\test\\images\\89be66f88612aae541f5843abcd9c015832b5d6c54a28103b3019f7f38df8a6d.tif",
+    "cell_count": 16,
+    "avg_nucleus_area_px": 1813.0625,
+    "total_nucleus_area_px": 29009.0,
+    "image_area_px": 129600,
+    "coverage_ratio": 0.22383487654320988
+  },
+  {
+    "file": "dsb2018\\test\\images\\8fdc34509a0c3721f7b5e235c8a93e1f553343aa17ad103a1e89e3509a3e1570.tif",
+    "cell_count": 36,
+    "avg_nucleus_area_px": 331.8333333333333,
+    "total_nucleus_area_px": 11946.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.182281494140625
+  },
+  {
+    "file": "dsb2018\\test\\images\\9520aff4efe87bd8f3901652fa2dde9b4bc9c679325966145ce00c1ca33f35de.tif",
+    "cell_count": 92,
+    "avg_nucleus_area_px": 423.0652173913044,
+    "total_nucleus_area_px": 38922.0,
+    "image_area_px": 327680,
+    "coverage_ratio": 0.118780517578125
+  },
+  {
+    "file": "dsb2018\\test\\images\\9ebcfaf2322932d464f15b5662cae4d669b2d785b8299556d73fffcae8365d32.tif",
+    "cell_count": 79,
+    "avg_nucleus_area_px": 330.9240506329114,
+    "total_nucleus_area_px": 26143.0,
+    "image_area_px": 81920,
+    "coverage_ratio": 0.31912841796875
+  },
+  {
+    "file": "dsb2018\\test\\images\\a5e695fce80dc03efb6665a9ec14500ab47f4ee9f6437531388dd3cc32c90db1.tif",
+    "cell_count": 106,
+    "avg_nucleus_area_px": 413.10377358490564,
+    "total_nucleus_area_px": 43789.0,
+    "image_area_px": 327680,
+    "coverage_ratio": 0.1336334228515625
+  },
+  {
+    "file": "dsb2018\\test\\images\\a6e81120d1cb9f71f8a25f90a5d56c4b714a642fc496a705e38921fd90a3f69c.tif",
+    "cell_count": 26,
+    "avg_nucleus_area_px": 1167.2307692307693,
+    "total_nucleus_area_px": 30348.0,
+    "image_area_px": 129600,
+    "coverage_ratio": 0.23416666666666666
+  },
+  {
+    "file": "dsb2018\\test\\images\\afa272dc01825d4b929b3bfc79a10f68dd3c163c450d858b964d1ce0bc93e131.tif",
+    "cell_count": 28,
+    "avg_nucleus_area_px": 333.5,
+    "total_nucleus_area_px": 9338.0,
+    "image_area_px": 361920,
+    "coverage_ratio": 0.02580128205128205
+  },
+  {
+    "file": "dsb2018\\test\\images\\b560dba92fbf2af785739efced50d5866c86dc4dada9be3832138bef4c3524d2.tif",
+    "cell_count": 19,
+    "avg_nucleus_area_px": 117.05263157894737,
+    "total_nucleus_area_px": 2224.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.033935546875
+  },
+  {
+    "file": "dsb2018\\test\\images\\b61d3fb0d0ebbee018346e0adeff9e9178f33aa95262779b3c196f93b4ace895.tif",
+    "cell_count": 162,
+    "avg_nucleus_area_px": 432.3641975308642,
+    "total_nucleus_area_px": 70043.0,
+    "image_area_px": 361920,
+    "coverage_ratio": 0.19353171971706454
+  },
+  {
+    "file": "dsb2018\\test\\images\\b6edad733399c83c8eb7a59c0d37b54e10cc0d59894e39ff843884d84f61dee1.tif",
+    "cell_count": 23,
+    "avg_nucleus_area_px": 1278.0,
+    "total_nucleus_area_px": 29394.0,
+    "image_area_px": 129600,
+    "coverage_ratio": 0.22680555555555557
+  },
+  {
+    "file": "dsb2018\\test\\images\\bde3727f3a9e8b2b58f383ebc762b2157eb50cdbff23e69b025418b43967556b.tif",
+    "cell_count": 103,
+    "avg_nucleus_area_px": 699.9611650485436,
+    "total_nucleus_area_px": 72096.0,
+    "image_area_px": 361920,
+    "coverage_ratio": 0.19920424403183024
+  },
+  {
+    "file": "dsb2018\\test\\images\\bf7691b0a79811fa068b7408cbce636a73f01ef9e971a95da1a2d96df73782b6.tif",
+    "cell_count": 79,
+    "avg_nucleus_area_px": 91.60759493670886,
+    "total_nucleus_area_px": 7237.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.1104278564453125
+  },
+  {
+    "file": "dsb2018\\test\\images\\c304a1fdf3bca2f4b4580d2cac59942e2224a7678001bf5ed9d9852f57708932.tif",
+    "cell_count": 244,
+    "avg_nucleus_area_px": 323.7950819672131,
+    "total_nucleus_area_px": 79006.0,
+    "image_area_px": 361920,
+    "coverage_ratio": 0.21829686118479222
+  },
+  {
+    "file": "dsb2018\\test\\images\\c9f305be17312bdb9530fb4f1adc6d29730ddbe0e74730cbf031de174bf437b7.tif",
+    "cell_count": 18,
+    "avg_nucleus_area_px": 1801.3333333333333,
+    "total_nucleus_area_px": 32424.0,
+    "image_area_px": 129600,
+    "coverage_ratio": 0.2501851851851852
+  },
+  {
+    "file": "dsb2018\\test\\images\\d8607b21411c9c8ab532faaeba15f8818a92025897950f94ee4da4f74f53660a.tif",
+    "cell_count": 22,
+    "avg_nucleus_area_px": 1720.3636363636363,
+    "total_nucleus_area_px": 37848.0,
+    "image_area_px": 129600,
+    "coverage_ratio": 0.29203703703703704
+  },
+  {
+    "file": "dsb2018\\test\\images\\e321cfa987e77c21373a0f8b1236c83d6636306949a82a7f5b07fc0838e7777f.tif",
+    "cell_count": 15,
+    "avg_nucleus_area_px": 281.93333333333334,
+    "total_nucleus_area_px": 4229.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.0645294189453125
+  },
+  {
+    "file": "dsb2018\\test\\images\\e5a7b8a9924b26b3abf039255a8a3bb00258f4966f68ff3349560b4350af9367.tif",
+    "cell_count": 22,
+    "avg_nucleus_area_px": 1244.8636363636363,
+    "total_nucleus_area_px": 27387.0,
+    "image_area_px": 129600,
+    "coverage_ratio": 0.21131944444444445
+  },
+  {
+    "file": "dsb2018\\test\\images\\e66f25e175abab08ecb4e5f6859db64a211e0ddffb262d7e727b9d9bd4aad2d2.tif",
+    "cell_count": 11,
+    "avg_nucleus_area_px": 164.54545454545453,
+    "total_nucleus_area_px": 1810.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.027618408203125
+  },
+  {
+    "file": "dsb2018\\test\\images\\ec486143ecfec847c22cd8cbc207d85312bcf38e61c9b9a805e0d12add62da8d.tif",
+    "cell_count": 13,
+    "avg_nucleus_area_px": 76.53846153846153,
+    "total_nucleus_area_px": 995.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.0151824951171875
+  },
+  {
+    "file": "dsb2018\\test\\images\\ee927e8255096971ddae1bd975cf80c4ad7c847c82d0b5f5dd2ddfe5407007ee.tif",
+    "cell_count": 60,
+    "avg_nucleus_area_px": 78.53333333333333,
+    "total_nucleus_area_px": 4712.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.0718994140625
+  },
+  {
+    "file": "dsb2018\\test\\images\\eeb142344e9de3250ab748f93940bf06be70d5078337680998468a134a101698.tif",
+    "cell_count": 36,
+    "avg_nucleus_area_px": 132.80555555555554,
+    "total_nucleus_area_px": 4781.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.0729522705078125
+  },
+  {
+    "file": "dsb2018\\test\\images\\f26f4c2c70c38fe12e00d5a814d5116691f2ca548908126923fd76ddd665ed24.tif",
+    "cell_count": 53,
+    "avg_nucleus_area_px": 332.188679245283,
+    "total_nucleus_area_px": 17606.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.268646240234375
+  },
+  {
+    "file": "dsb2018\\test\\images\\feffce59a1a3eb0a6a05992bb7423c39c7d52865846da36d89e2a72c379e5398.tif",
+    "cell_count": 46,
+    "avg_nucleus_area_px": 91.02173913043478,
+    "total_nucleus_area_px": 4187.0,
+    "image_area_px": 65536,
+    "coverage_ratio": 0.0638885498046875
+  },
+  {
+    "file": "dsb2018\\test\\images\\ff599c7301daa1f783924ac8cbe3ce7b42878f15a39c2d19659189951f540f48.tif",
+    "cell_count": 23,
+    "avg_nucleus_area_px": 1718.608695652174,
+    "total_nucleus_area_px": 39528.0,
+    "image_area_px": 129600,
+    "coverage_ratio": 0.305
+  }
+]

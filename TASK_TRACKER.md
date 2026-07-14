@@ -18,10 +18,12 @@
 - [x] Save `unet_nuclei.pth` + `training_history.json`
 
 ## Phase 3: CV Pipeline & Feature Extraction
-- [ ] CLAHE pre-processing
-- [ ] Inference → binary mask
-- [ ] `cv2.findContours` outlines
-- [ ] `regionprops` for count & avg area
+- [x] CLAHE pre-processing (`preprocess()` — grayscale conversion + CLAHE + 3-channel stack)
+- [x] Inference → binary mask (`infer()` — sigmoid @ 0.5 threshold)
+- [x] `cv2.findContours` outlines (`draw_contours()` — green contours on RGB)
+- [x] `regionprops` for count & avg area (`extract_features()` — cell_count, avg_nucleus_area_px, coverage_ratio)
+- [x] `run_pipeline()` — end-to-end: image path → metrics + base64 annotated image
+- [x] Verified on all 50 test images (avg 51.6 cells/image, Dice=0.886 vs GT masks)
 
 ## Phase 4: FastAPI Deployment
 - [ ] `main.py` FastAPI app
