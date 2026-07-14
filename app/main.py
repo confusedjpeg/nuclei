@@ -3,13 +3,15 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Dict, Any
+import random
 
 import cv2
 import numpy as np
 import torch
 import uvicorn
 from fastapi import FastAPI, File, UploadFile, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -18,6 +20,8 @@ from src.pipeline import load_model, preprocess, infer, draw_contours, extract_f
 
 model_lock = None
 ml_models: Dict[str, Any] = {}
+
+SAMPLE_IMAGES_DIR = PROJECT_ROOT / "dsb2018" / "test" / "images"
 
 
 @asynccontextmanager
@@ -47,6 +51,18 @@ async def health():
         "model_loaded": "segmenter" in ml_models,
         "device": str(ml_models.get("device", "unknown")),
     }
+
+
+@app.get("/sample")
+async def get_sample():
+    """Return a random test image from the DSB 2018 test set."""
+    if not SAMPLE_IMAGES_DIR.is_dir():
+        raise HTTPException(500, "Sample images directory not found")
+    images = sorted(SAMPLE_IMAGES_DIR.glob("*.tif"))
+    if not images:
+        raise HTTPException(500, "No sample images available")
+    path = random.choice(images)
+    return FileResponse(str(path), media_type="image/tiff", filename=path.name)
 
 
 @app.post("/analyze")
@@ -89,6 +105,15 @@ async def analyze(file: UploadFile = File(...), return_annotated: bool = True):
         result["annotated_image_base64"] = base64_encode(buffer)
 
     return JSONResponse(result)
+
+
+STATIC_DIR = PROJECT_ROOT / "app" / "static"
+if STATIC_DIR.is_dir():
+    app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+    @app.get("/")
+    async def serve_index():
+        return FileResponse(str(STATIC_DIR / "index.html"), media_type="text/html")
 
 
 if __name__ == "__main__":

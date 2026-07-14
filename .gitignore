@@ -8,3 +8,7 @@ venv/
 .env
 .DS_Store
 models/*.png
+models/*.json
+TASK_TRACKER.md
+*.zip
+*.log

@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioVision — CellSegmenter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sen:wght@400;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-deep: #060a12;
+  --bg-body: #0b1120;
+  --bg-card: #0f1830;
+  --bg-elevated: #141f3a;
+  --bg-hover: #1a2745;
+  --border: rgba(56, 189, 248, 0.08);
+  --border-strong: rgba(56, 189, 248, 0.2);
+  --accent: #16b8d4;
+  --accent-dim: rgba(22, 184, 212, 0.15);
+  --accent-glow: rgba(22, 184, 212, 0.08);
+  --green: #34d399;
+  --green-dim: rgba(52, 211, 153, 0.12);
+  --text: #e4edf5;
+  --text-secondary: #8ba0c4;
+  --text-muted: #4a6080;
+  --text-dim: #2e4060;
+  --error: #fb7185;
+  --error-dim: rgba(251, 113, 133, 0.12);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --shadow: 0 4px 40px rgba(0,0,0,0.5);
+  --font-heading: 'Sen', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-body);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(22,184,212,0.03) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 80% 90%, rgba(52,211,153,0.02) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* grid overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(56,189,248,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56,189,248,0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 20px 24px 40px; }
+
+/* HEADER */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.logo {
+  width: 36px; height: 36px;
+  border: 1.5px solid var(--accent);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--accent);
+  background: var(--accent-dim);
+  flex-shrink: 0;
+}
+.brand h1 {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.2;
+}
+.brand span {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+  letter-spacing: 0.3px;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: background 0.4s;
+}
+.status-dot.online { background: var(--green); box-shadow: 0 0 8px rgba(52,211,153,0.4); }
+.status-dot.offline { background: var(--error); box-shadow: 0 0 8px rgba(251,113,133,0.4); }
+.version {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+/* MAIN GRID */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 28px;
+  align-items: start;
+}
+@media (max-width: 820px) {
+  .main-grid { grid-template-columns: 1fr; }
+  .app { padding: 16px; }
+}
+
+/* CARDS */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  transition: border-color 0.3s;
+}
+.card-highlight { border-color: var(--border-strong); }
+
+/* UPLOAD SECTION */
+.upload-area {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.drop-zone {
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius);
+  padding: 48px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  background: var(--bg-elevated);
+  position: relative;
+  overflow: hidden;
+}
+.drop-zone::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, var(--accent-glow) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.drop-zone:hover, .drop-zone.dragover {
+  border-color: var(--accent);
+  background: var(--bg-hover);
+  transform: translateY(-1px);
+}
+.drop-zone:hover::before, .drop-zone.dragover::before { opacity: 1; }
+.drop-zone-icon {
+  width: 52px; height: 52px;
+  margin: 0 auto 14px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  transition: all 0.3s;
+  position: relative;
+  z-index: 1;
+  color: var(--text-muted);
+}
+.drop-zone:hover .drop-zone-icon, .drop-zone.dragover .drop-zone-icon {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+.drop-zone-text {
+  position: relative; z-index: 1;
+}
+.drop-zone-text p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+.drop-zone-text small {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.drop-zone input[type="file"] { display: none; }
+
+/* file selected state */
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  position: relative; z-index: 1;
+}
+.file-info-name {
+  flex: 1;
+  font-size: 0.8rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.file-info-size {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.file-info-remove {
+  background: none; border: none; color: var(--text-muted);
+  cursor: pointer; font-size: 1rem; padding: 2px 6px;
+  border-radius: 4px; transition: all 0.2s;
+}
+.file-info-remove:hover { color: var(--error); background: var(--error-dim); }
+
+/* BUTTONS */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.82rem;
+  padding: 10px 22px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  white-space: nowrap;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+.btn-primary {
+  background: var(--accent);
+  color: #060a12;
+}
+.btn-primary:hover:not(:disabled) {
+  background: #1ac8e6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(22,184,212,0.3);
+}
+.btn-secondary {
+  background: var(--bg-elevated);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover:not(:disabled) {
+  background: var(--bg-elevated);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.btn-sm { padding: 6px 14px; font-size: 0.75rem; }
+.btn-full { width: 100%; }
+.upload-actions {
+  display: flex;
+  gap: 10px;
+  z-index: 1;
+  position: relative;
+}
+
+/* RESULTS SECTION */
+.results-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  text-align: center;
+  gap: 12px;
+}
+.results-placeholder .icon {
+  font-size: 2.5rem;
+  opacity: 0.3;
+  margin-bottom: 4px;
+}
+.results-placeholder h3 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+.results-placeholder p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  max-width: 280px;
+}
+
+/* IMAGE DISPLAY */
+.image-display {
+  margin-bottom: 20px;
+}
+.image-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  width: fit-content;
+}
+.image-tab {
+  padding: 6px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.image-tab.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+.image-tab:hover:not(.active) { color: var(--text-secondary); }
+.image-frame {
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  position: relative;
+  aspect-ratio: 4/3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.image-frame img {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+  object-fit: contain;
+}
+.image-frame.loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.image-frame .empty-state {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+}
+
+/* METRICS GRID */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+@media (max-width: 600px) {
+  .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.metric {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 12px;
+  text-align: center;
+  transition: all 0.3s;
+}
+.metric:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+.metric-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.metric-value {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 1.25rem;
+  color: var(--text);
+  line-height: 1.2;
+}
+.metric-value .unit {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+.metric.accent .metric-value { color: var(--accent); }
+.metric.green .metric-value { color: var(--green); }
+
+/* BASE64 DISPLAY */
+.base64-section {
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+  padding-top: 14px;
+}
+.base64-toggle {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+}
+.base64-toggle:hover { color: var(--text-secondary); }
+.base64-toggle .arrow {
+  transition: transform 0.25s;
+  font-size: 0.6rem;
+}
+.base64-toggle.open .arrow { transform: rotate(90deg); }
+.base64-content {
+  display: none;
+  margin-top: 8px;
+}
+.base64-content.open { display: block; }
+.base64-box {
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  max-height: 120px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  word-break: break-all;
+  position: relative;
+}
+.base64-box::-webkit-scrollbar { width: 4px; }
+.base64-box::-webkit-scrollbar-track { background: transparent; }
+.base64-box::-webkit-scrollbar-thumb { background: var(--text-dim); border-radius: 2px; }
+.base64-copy {
+  position: absolute;
+  top: 8px; right: 8px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 0.2s;
+}
+.base64-copy:hover { color: var(--text); border-color: var(--border-strong); }
+.base64-copy.copied { background: var(--green-dim); color: var(--green); border-color: rgba(52,211,153,0.3); }
+
+/* EVALUATION SECTION */
+.eval-section {
+  margin-top: 32px;
+  border-top: 1px solid var(--border);
+  padding-top: 24px;
+}
+.eval-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.eval-header h2 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+.eval-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.eval-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+.eval-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.3s;
+}
+.eval-card.pass { border-color: rgba(52,211,153,0.2); background: rgba(52,211,153,0.04); }
+.eval-card.fail { border-color: rgba(251,113,133,0.2); background: rgba(251,113,133,0.04); }
+.eval-card-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+.eval-card.pass .eval-card-icon { color: var(--green); border-color: rgba(52,211,153,0.3); background: var(--green-dim); }
+.eval-card.fail .eval-card-icon { color: var(--error); border-color: rgba(251,113,133,0.3); background: var(--error-dim); }
+.eval-card-info { flex: 1; min-width: 0; }
+.eval-card-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+.eval-card-detail {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.eval-card-status {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 10px;
+}
+.eval-card.pass .eval-card-status { color: var(--green); background: var(--green-dim); }
+.eval-card.fail .eval-card-status { color: var(--error); background: var(--error-dim); }
+.eval-card.pending .eval-card-status { color: var(--text-muted); background: var(--bg-card); }
+.eval-summary {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.eval-summary.pass-all { border-color: rgba(52,211,153,0.2); }
+.eval-summary.fail-any { border-color: rgba(251,113,133,0.2); }
+
+/* SPINNER */
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid var(--bg-elevated);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* LOADING OVERLAY FOR UPLOAD */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6,10,18,0.85);
+  border-radius: var(--radius);
+  z-index: 10;
+  gap: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.loading-overlay.active { opacity: 1; pointer-events: all; }
+.loading-overlay .spinner { width: 28px; height: 28px; border-width: 3px; }
+.loading-overlay span {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* FOOTER */
+.footer {
+  margin-top: 48px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.footer .endpoint {
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+/* RESPONSIVE HELPERS */
+.hide-mobile { display: initial; }
+@media (max-width: 820px) { .hide-mobile { display: none; } }
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes countUp { from { opacity: 0; } to { opacity: 1; } }
+.animate-in {
+  animation: fadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+.delay-4 { animation-delay: 0.4s; }
+.delay-5 { animation-delay: 0.5s; }
+
+/* CUSTOM SCROLLBAR */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--text-dim); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* SELECTION */
+::selection { background: var(--accent-dim); color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- HEADER -->
+  <header class="header animate-in">
+    <div class="header-left">
+      <div class="logo">◆</div>
+      <div class="brand">
+        <h1>BioVision</h1>
+        <span>CellSegmenter · Nuclei Analysis Pipeline</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="status">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">Connecting…</span>
+      </div>
+      <span class="version hide-mobile">v1.0.0</span>
+    </div>
+  </header>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+    <!-- UPLOAD SECTION -->
+    <section class="card upload-area animate-in-up delay-1">
+      <div class="drop-zone" id="dropZone">
+        <div class="drop-zone-icon" id="dropIcon">↑</div>
+        <div class="drop-zone-text" id="dropText">
+          <p id="dropMain">Drop image here or click to browse</p>
+          <small id="dropSub">PNG &middot; JPEG &middot; TIFF</small>
+        </div>
+        <div class="file-info" id="fileInfo" style="display:none">
+          <span class="file-info-name" id="fileName"></span>
+          <span class="file-info-size" id="fileSize"></span>
+          <button class="file-info-remove" id="fileRemove" title="Remove">&times;</button>
+        </div>
+        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/tiff">
+        <div class="loading-overlay" id="uploadOverlay">
+          <div class="spinner"></div>
+          <span>Segmenting nuclei…</span>
+        </div>
+      </div>
+
+      <div class="upload-actions">
+        <button class="btn btn-primary btn-full" id="analyzeBtn" disabled>Analyze Image</button>
+      </div>
+
+      <div class="upload-actions" style="margin-top:4px">
+        <button class="btn btn-ghost btn-full btn-sm" id="sampleBtn">
+          &#9672; Run Sample Test
+        </button>
+      </div>
+    </section>
+
+    <!-- RESULTS SECTION -->
+    <section class="card animate-in-up delay-2" id="resultsCard">
+      <div id="resultsPlaceholder" class="results-placeholder">
+        <div class="icon">&#9672;</div>
+        <h3>Awaiting Analysis</h3>
+        <p>Upload a microscopy image or run the sample test to begin</p>
+      </div>
+
+      <div id="resultsContent" style="display:none">
+        <!-- Image Display -->
+        <div class="image-display">
+          <div class="image-tabs" id="imageTabs">
+            <button class="image-tab active" data-tab="annotated">Annotated</button>
+            <button class="image-tab" data-tab="original">Original</button>
+          </div>
+          <div class="image-frame" id="imageFrame">
+            <img id="resultImage" alt="Analysis result" style="display:none">
+            <span class="empty-state" id="imageEmpty">No image data</span>
+          </div>
+        </div>
+
+        <!-- Metrics -->
+        <div class="metrics-grid" id="metricsGrid">
+          <div class="metric accent">
+            <div class="metric-label">Nuclei</div>
+            <div class="metric-value"><span id="mCells">—</span></div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Avg Area</div>
+            <div class="metric-value"><span id="mArea">—</span> <span class="unit">px&sup2;</span></div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Coverage</div>
+            <div class="metric-value"><span id="mCoverage">—</span></div>
+          </div>
+          <div class="metric green">
+            <div class="metric-label">Time</div>
+            <div class="metric-value"><span id="mTime">—</span> <span class="unit">s</span></div>
+          </div>
+        </div>
+
+        <!-- Base64 -->
+        <div class="base64-section">
+          <button class="base64-toggle" id="base64Toggle">
+            <span class="arrow">&#9654;</span> Show base64 encoded image
+          </button>
+          <div class="base64-content" id="base64Content">
+            <div class="base64-box" id="base64Box">
+              <button class="base64-copy" id="base64Copy">Copy</button>
+              <code id="base64Text"></code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- EVALUATION SECTION -->
+  <section class="eval-section animate-in-up delay-3">
+    <div class="eval-header">
+      <h2>Diagnostics &amp; Evaluation</h2>
+      <div class="eval-controls">
+        <button class="btn btn-secondary btn-sm" id="evalBtn">
+          &#9673; Run Full Diagnostic
+        </button>
+        <button class="btn btn-ghost btn-sm" id="evalClearBtn">Clear</button>
+      </div>
+    </div>
+
+    <div class="eval-grid" id="evalGrid">
+      <div class="eval-card pending" data-test="health">
+        <div class="eval-card-icon">&#9881;</div>
+        <div class="eval-card-info">
+          <div class="eval-card-label">API Health</div>
+          <div class="eval-card-detail" id="evalHealthDetail">Not tested</div>
+        </div>
+        <span class="eval-card-status">Pending</span>
+      </div>
+      <div class="eval-card pending" data-test="upload">
+        <div class="eval-card-icon">&#8593;</div>
+        <div class="eval-card-info">
+          <div class="eval-card-label">Image Upload</div>
+          <div class="eval-card-detail" id="evalUploadDetail">Not tested</div>
+        </div>
+        <span class="eval-card-status">Pending</span>
+      </div>
+      <div class="eval-card pending" data-test="inference">
+        <div class="eval-card-icon">&#9672;</div>
+        <div class="eval-card-info">
+          <div class="eval-card-label">Inference Engine</div>
+          <div class="eval-card-detail" id="evalInferDetail">Not tested</div>
+        </div>
+        <span class="eval-card-status">Pending</span>
+      </div>
+      <div class="eval-card pending" data-test="features">
+        <div class="eval-card-icon">&#9776;</div>
+        <div class="eval-card-info">
+          <div class="eval-card-label">Feature Extraction</div>
+          <div class="eval-card-detail" id="evalFeatureDetail">Not tested</div>
+        </div>
+        <span class="eval-card-status">Pending</span>
+      </div>
+    </div>
+
+    <div class="eval-summary" id="evalSummary" style="display:none">
+      <span id="evalSummaryIcon">&#9673;</span>
+      <span id="evalSummaryText"></span>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <span>BioVision-CellSegmenter &mdash; Nuclei instance segmentation &amp; morphometric analysis</span>
+    <span class="endpoint" id="endpointDisplay">POST /analyze</span>
+  </footer>
+</div>
+
+<script>
+(function() {
+  // state
+  const state = {
+    selectedFile: null,
+    resultData: null,
+    currentImageTab: 'annotated',
+    originalImageDataUrl: null,
+    evalResults: {},
+  };
+
+  // dom refs
+  const $ = id => document.getElementById(id);
+  const dropZone = $('dropZone');
+  const fileInput = $('fileInput');
+  const analyzeBtn = $('analyzeBtn');
+  const sampleBtn = $('sampleBtn');
+  const fileInfo = $('fileInfo');
+  const fileName = $('fileName');
+  const fileSize = $('fileSize');
+  const fileRemove = $('fileRemove');
+  const uploadOverlay = $('uploadOverlay');
+  const dropText = $('dropText');
+  const dropMain = $('dropMain');
+  const dropSub = $('dropSub');
+  const dropIcon = $('dropIcon');
+  const resultsPlaceholder = $('resultsPlaceholder');
+  const resultsContent = $('resultsContent');
+  const resultImage = $('resultImage');
+  const imageEmpty = $('imageEmpty');
+  const imageFrame = $('imageFrame');
+  const mCells = $('mCells');
+  const mArea = $('mArea');
+  const mCoverage = $('mCoverage');
+  const mTime = $('mTime');
+  const base64Toggle = $('base64Toggle');
+  const base64Content = $('base64Content');
+  const base64Text = $('base64Text');
+  const base64Copy = $('base64Copy');
+  const imageTabs = $('imageTabs');
+  const statusDot = $('statusDot');
+  const statusText = $('statusText');
+  const evalBtn = $('evalBtn');
+  const evalClearBtn = $('evalClearBtn');
+  const evalGrid = $('evalGrid');
+  const evalSummary = $('evalSummary');
+  const evalSummaryText = $('evalSummaryText');
+  const evalSummaryIcon = $('evalSummaryIcon');
+  const endpointDisplay = $('endpointDisplay');
+  const evalHealthDetail = $('evalHealthDetail');
+  const evalUploadDetail = $('evalUploadDetail');
+  const evalInferDetail = $('evalInferDetail');
+  const evalFeatureDetail = $('evalFeatureDetail');
+
+  const API_BASE = window.location.origin;
+  endpointDisplay.textContent = `${API_BASE}/analyze`;
+
+  // status
+  async function checkHealth() {
+    statusDot.className = 'status-dot';
+    statusText.textContent = 'Connecting…';
+    try {
+      const res = await fetch(`${API_BASE}/health`);
+      const data = await res.json();
+      if (data.status === 'ok') {
+        statusDot.className = 'status-dot online';
+        statusText.textContent = `Online · ${data.device || 'ready'}`;
+        return true;
+      }
+      throw new Error('unexpected response');
+    } catch {
+      statusDot.className = 'status-dot offline';
+      statusText.textContent = 'Offline';
+      return false;
+    }
+  }
+
+  // file handling
+  function handleFile(file) {
+    if (!file) return;
+    const valid = ['image/png','image/jpeg','image/tiff','image/tif','image/x-tiff'];
+    if (!valid.includes(file.type) && !file.name.match(/\.(png|jpe?g|tif?f)$/i)) {
+      alert('Unsupported file type. Please upload PNG, JPEG, or TIFF.');
+      return;
+    }
+    state.selectedFile = file;
+    fileName.textContent = file.name;
+    fileSize.textContent = (file.size / 1024).toFixed(1) + ' KB';
+    fileInfo.style.display = 'flex';
+    dropText.style.display = 'none';
+    dropIcon.textContent = '✓';
+    dropIcon.style.borderColor = 'var(--green)';
+    dropIcon.style.color = 'var(--green)';
+    analyzeBtn.disabled = false;
+    dropZone.style.borderColor = 'rgba(52,211,153,0.3)';
+  }
+
+  function removeFile() {
+    state.selectedFile = null;
+    fileInfo.style.display = 'none';
+    dropText.style.display = 'block';
+    dropIcon.textContent = '↑';
+    dropIcon.style.borderColor = '';
+    dropIcon.style.color = '';
+    analyzeBtn.disabled = true;
+    fileInput.value = '';
+    dropZone.style.borderColor = '';
+  }
+
+  dropZone.addEventListener('click', (e) => {
+    if (e.target.closest('.file-info-remove')) return;
+    if (e.target.closest('.loading-overlay')) return;
+    fileInput.click();
+  });
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length) handleFile(fileInput.files[0]);
+  });
+
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+  });
+  dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('dragover');
+  });
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+
+  fileRemove.addEventListener('click', (e) => {
+    e.stopPropagation();
+    removeFile();
+  });
+
+  // analyze
+  async function analyzeImage(file) {
+    uploadOverlay.classList.add('active');
+    analyzeBtn.disabled = true;
+    sampleBtn.disabled = true;
+
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      form.append('return_annotated', 'true');
+
+      const start = performance.now();
+      const res = await fetch(`${API_BASE}/analyze`, { method: 'POST', body: form });
+      const elapsed = ((performance.now() - start) / 1000).toFixed(2);
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ detail: `HTTP ${res.status}` }));
+        throw new Error(err.detail || 'Analysis failed');
+      }
+
+      const data = await res.json();
+      data._duration = parseFloat(elapsed);
+      state.resultData = data;
+
+      // store original image as data URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        state.originalImageDataUrl = e.target.result;
+        uploadOverlay.classList.remove('active');
+        analyzeBtn.disabled = false;
+        sampleBtn.disabled = false;
+        renderResults(data);
+      };
+      reader.readAsDataURL(file);
+
+    } catch (err) {
+      uploadOverlay.classList.remove('active');
+      analyzeBtn.disabled = !state.selectedFile;
+      sampleBtn.disabled = false;
+      alert('Error: ' + err.message);
+    }
+  }
+
+  analyzeBtn.addEventListener('click', () => {
+    if (state.selectedFile) analyzeImage(state.selectedFile);
+  });
+
+  // sample test
+  sampleBtn.addEventListener('click', async () => {
+    sampleBtn.disabled = true;
+    sampleBtn.innerHTML = '<span class="spinner"></span> Loading sample…';
+
+    try {
+      const res = await fetch(`${API_BASE}/sample`);
+      if (!res.ok) throw new Error('Could not fetch sample image');
+      const blob = await res.blob();
+      const file = new File([blob], 'sample.tif', { type: 'image/tiff' });
+      handleFile(file);
+      await analyzeImage(file);
+    } catch (err) {
+      alert('Sample test failed: ' + err.message);
+    } finally {
+      sampleBtn.disabled = false;
+      sampleBtn.innerHTML = '&#9672; Run Sample Test';
+    }
+  });
+
+  // render results
+  function renderResults(data) {
+    resultsPlaceholder.style.display = 'none';
+    resultsContent.style.display = 'block';
+
+    // image
+    updateImage();
+
+    // metrics
+    const fc = data.features;
+    mCells.textContent = fc.cell_count;
+    mArea.textContent = fc.avg_nucleus_area_px.toFixed(1);
+    mCoverage.textContent = (fc.coverage_ratio * 100).toFixed(1) + '%';
+    mTime.textContent = data._duration.toFixed(2);
+
+    // base64
+    const b64 = data.annotated_image_base64 || '';
+    base64Text.textContent = b64 ? `data:image/png;base64,${b64}` : '(no base64 data)';
+
+    // animate metrics
+    animateMetrics();
+
+    // scroll to results
+    $('resultsCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function updateImage() {
+    const tab = state.currentImageTab;
+    if (tab === 'annotated' && state.resultData) {
+      const b64 = state.resultData.annotated_image_base64;
+      if (b64) {
+        const src = `data:image/png;base64,${b64}`;
+        resultImage.src = src;
+        resultImage.style.display = 'block';
+        imageEmpty.style.display = 'none';
+      }
+    } else if (tab === 'original' && state.originalImageDataUrl) {
+      resultImage.src = state.originalImageDataUrl;
+      resultImage.style.display = 'block';
+      imageEmpty.style.display = 'none';
+    } else {
+      resultImage.style.display = 'none';
+      imageEmpty.style.display = 'block';
+    }
+  }
+
+  // image tabs
+  imageTabs.addEventListener('click', (e) => {
+    const tab = e.target.closest('.image-tab');
+    if (!tab) return;
+    imageTabs.querySelectorAll('.image-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    state.currentImageTab = tab.dataset.tab;
+    updateImage();
+  });
+
+  // base64 toggle
+  base64Toggle.addEventListener('click', () => {
+    const open = base64Content.classList.toggle('open');
+    base64Toggle.classList.toggle('open');
+  });
+
+  base64Copy.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(base64Text.textContent);
+      base64Copy.textContent = 'Copied!';
+      base64Copy.classList.add('copied');
+      setTimeout(() => {
+        base64Copy.textContent = 'Copy';
+        base64Copy.classList.remove('copied');
+      }, 2000);
+    } catch {
+      alert('Failed to copy to clipboard');
+    }
+  });
+
+  // animate metrics (simple pulse)
+  function animateMetrics() {
+    const cards = document.querySelectorAll('.metric');
+    cards.forEach((card, i) => {
+      card.style.animation = 'none';
+      void card.offsetHeight;
+      card.style.animation = `fadeInUp 0.4s ${i * 0.08}s cubic-bezier(0.22,1,0.36,1) both`;
+    });
+  }
+
+  // EVALUATION
+  const evalDetailMap = {
+    health: evalHealthDetail,
+    upload: evalUploadDetail,
+    inference: evalInferDetail,
+    features: evalFeatureDetail,
+  };
+
+  function createEvalPayload(formData, durationMs, data, healthOk) {
+    return { formData, durationMs, data, healthOk };
+  }
+
+  async function runDiagnostic() {
+    evalBtn.disabled = true;
+    evalBtn.innerHTML = '<span class="spinner"></span> Running…';
+
+    // reset eval cards
+    document.querySelectorAll('.eval-card').forEach(c => {
+      c.className = 'eval-card pending';
+      c.querySelector('.eval-card-status').textContent = 'Running…';
+    });
+    evalSummary.style.display = 'none';
+
+    const results = {};
+
+    // 1. Health check
+    try {
+      const t0 = performance.now();
+      const res = await fetch(`${API_BASE}/health`);
+      const dt = ((performance.now() - t0) / 1000).toFixed(2);
+      const data = await res.json();
+      const ok = res.ok && data.status === 'ok';
+      applyEvalResult('health', ok, ok ? `${data.device} (${dt}s)` : `HTTP ${res.status}`, data);
+      results.health = { ok, data };
+    } catch (err) {
+      applyEvalResult('health', false, err.message, null);
+      results.health = { ok: false, error: err.message };
+    }
+
+    // 2. Upload a sample image (if health passed)
+    if (results.health && results.health.ok) {
+      try {
+        const t0 = performance.now();
+        const imgRes = await fetch(`${API_BASE}/sample`);
+        if (!imgRes.ok) throw new Error(`Sample fetch: HTTP ${imgRes.status}`);
+        const blob = await imgRes.blob();
+        const file = new File([blob], 'diag_sample.tif', { type: 'image/tiff' });
+        const form = new FormData();
+        form.append('file', file);
+        form.append('return_annotated', 'true');
+        const upRes = await fetch(`${API_BASE}/analyze`, { method: 'POST', body: form });
+        const upDt = ((performance.now() - t0) / 1000).toFixed(2);
+        if (!upRes.ok) {
+          const errData = await upRes.json().catch(() => ({}));
+          throw new Error(errData.detail || `HTTP ${upRes.status}`);
+        }
+        const upData = await upRes.json();
+        applyEvalResult('upload', true, `${file.name} (${upDt}s)`, upData);
+        results.upload = { ok: true, data: upData, duration: upDt };
+
+        // 3. Inference check (mask generated)
+        const hasAnnotated = !!upData.annotated_image_base64;
+        const hasFeatures = upData.features && typeof upData.features.cell_count === 'number';
+        applyEvalResult('inference', hasAnnotated, hasAnnotated ? 'Mask generated' : 'No annotated image', upData);
+        results.inference = { ok: hasAnnotated, data: upData };
+
+        // 4. Feature extraction
+        const featOk = hasFeatures && upData.features.cell_count > 0;
+        const featDetail = featOk
+          ? `${upData.features.cell_count} cells · ${upData.features.avg_nucleus_area_px.toFixed(1)}px² avg`
+          : 'No features extracted';
+        applyEvalResult('features', featOk, featDetail, upData);
+        results.features = { ok: featOk, data: upData.features };
+
+        // also populate the UI with sample result
+        if (upData) {
+          state.resultData = { ...upData, _duration: parseFloat(upDt) };
+          state.originalImageDataUrl = URL.createObjectURL(file);
+          resultsPlaceholder.style.display = 'none';
+          resultsContent.style.display = 'block';
+          updateImage();
+          mCells.textContent = upData.features.cell_count;
+          mArea.textContent = upData.features.avg_nucleus_area_px.toFixed(1);
+          mCoverage.textContent = (upData.features.coverage_ratio * 100).toFixed(1) + '%';
+          mTime.textContent = upDt;
+          const b64 = upData.annotated_image_base64 || '';
+          base64Text.textContent = b64 ? `data:image/png;base64,${b64}` : '(no base64 data)';
+          animateMetrics();
+        }
+      } catch (err) {
+        applyEvalResult('upload', false, err.message, null);
+        applyEvalResult('inference', false, 'Skipped (upload failed)', null);
+        applyEvalResult('features', false, 'Skipped (upload failed)', null);
+      }
+    } else {
+      applyEvalResult('upload', false, 'Skipped (API offline)', null);
+      applyEvalResult('inference', false, 'Skipped (API offline)', null);
+      applyEvalResult('features', false, 'Skipped (API offline)', null);
+    }
+
+    // summary
+    const all = ['health','upload','inference','features'];
+    const allPassed = all.every(k => results[k] && results[k].ok);
+    const anyFailed = all.some(k => results[k] && !results[k].ok);
+
+    evalSummary.style.display = 'flex';
+    evalSummary.className = 'eval-summary' + (allPassed ? ' pass-all' : anyFailed ? ' fail-any' : '');
+    evalSummaryIcon.textContent = allPassed ? '✓' : anyFailed ? '✗' : '—';
+    evalSummaryText.textContent = allPassed
+      ? 'All diagnostics passed — pipeline is fully operational.'
+      : anyFailed
+        ? 'Some diagnostics failed. Check individual test results above.'
+        : 'Diagnostics incomplete.';
+
+    evalBtn.disabled = false;
+    evalBtn.innerHTML = '&#9673; Run Full Diagnostic';
+  }
+
+  function applyEvalResult(testId, passed, detail, data) {
+    const card = document.querySelector(`.eval-card[data-test="${testId}"]`);
+    if (!card) return;
+    card.className = 'eval-card ' + (passed ? 'pass' : 'fail');
+    card.querySelector('.eval-card-status').textContent = passed ? 'Pass' : 'Fail';
+    const detailEl = evalDetailMap[testId];
+    if (detailEl) detailEl.textContent = detail || (passed ? 'OK' : 'Error');
+  }
+
+  evalBtn.addEventListener('click', runDiagnostic);
+  evalClearBtn.addEventListener('click', () => {
+    document.querySelectorAll('.eval-card').forEach(c => {
+      c.className = 'eval-card pending';
+      c.querySelector('.eval-card-status').textContent = 'Pending';
+    });
+    evalHealthDetail.textContent = 'Not tested';
+    evalUploadDetail.textContent = 'Not tested';
+    evalInferDetail.textContent = 'Not tested';
+    evalFeatureDetail.textContent = 'Not tested';
+    evalSummary.style.display = 'none';
+  });
+
+  // init
+  checkHealth();
+
+  // keyboard shortcut
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      if (!analyzeBtn.disabled) analyzeBtn.click();
+    }
+  });
+})();
+</script>
+</body>
+</html>
