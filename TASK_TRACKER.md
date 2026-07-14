@@ -26,6 +26,9 @@
 - [x] Verified on all 50 test images (avg 51.6 cells/image, Dice=0.886 vs GT masks)
 
 ## Phase 4: FastAPI Deployment
-- [ ] `main.py` FastAPI app
-- [ ] `POST /analyze` endpoint
-- [ ] JSON response + base64 annotated image
+- [x] `app/main.py` FastAPI app with lifespan model loading
+- [x] `GET /health` endpoint
+- [x] `POST /analyze` endpoint — accepts image upload (TIFF/PNG/JPEG)
+- [x] Returns JSON: filename, image_shape, features (cell_count, avg_area, coverage)
+- [x] Optional base64 annotated image via `return_annotated` param
+- [x] Tested on real DSB 2018 images: all endpoints working
