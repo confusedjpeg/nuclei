@@ -11,10 +11,11 @@
 - [x] Git init + first commit
 
 ## Phase 2: Deep Learning Model Training (PyTorch)
-- [ ] Initialize U-Net (`resnet34`) via SMP
-- [ ] Dice + BCE loss, Adam optimizer
-- [ ] 10–15 epoch training loop
-- [ ] Save `unet_nuclei.pth`
+- [x] Initialize U-Net (`resnet34`) via SMP with ImageNet pretrained weights
+- [x] Dice + BCE loss, Adam optimizer
+- [x] 15 epoch training loop on full 447-image DSB 2018 training set
+- [x] Model converged: val_loss=0.0842, val_dice=0.9201, val_iou=0.8562
+- [x] Save `unet_nuclei.pth` + `training_history.json`
 
 ## Phase 3: CV Pipeline & Feature Extraction
 - [ ] CLAHE pre-processing
